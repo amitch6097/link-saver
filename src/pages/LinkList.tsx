@@ -2,19 +2,27 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid, { GridSpacing } from "@material-ui/core/Grid";
 import useLinks from "../hooks/useLinks";
+import useNavigation from '../hooks/useNavigation';
 import { HomeButton } from "../components/HomeButton";
 import { SaveButton } from "../components/SaveButton";
 import { LinkRow } from "../components/LinkRow";
+
 export function LinkList() {
   const {
+    idle,
     links,
     label,
     add,
     remove,
     setLabel,
     setLinkLabel,
-    setLinkLink
+    setLinkLink,
+    save
   } = useLinks();
+
+  const {
+      goHome
+  } = useNavigation();
 
   const onChangeLabel = e => {
     setLabel(e.target.value);
@@ -28,7 +36,7 @@ export function LinkList() {
         justify="space-between"
         alignItems="center"
       >
-        <HomeButton onClick={console.log} />
+        <HomeButton onClick={goHome} />
         <TextField
           id="link-list-title"
           label="Name of Link List"
@@ -36,7 +44,7 @@ export function LinkList() {
           variant="outlined"
           onChange={onChangeLabel}
         />{" "}
-        <SaveButton onClick={console.log} />
+        <SaveButton saving={idle} onClick={save} />
       </Grid>
 
       {links.map((link, index) => {

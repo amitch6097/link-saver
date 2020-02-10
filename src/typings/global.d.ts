@@ -7,4 +7,10 @@ declare namespace Global {
     link: string;
     id: string;
   }
+
+  export interface ILinks {
+      id: string;
+      links: ILink[]
+      label: string;
+  }
 }

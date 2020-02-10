@@ -2,15 +2,24 @@ import { Store, register } from "simple-object-state";
 import history from "../history";
 
 export interface INavigationStoreState {}
-export interface INavigationStoreActions {}
+export interface INavigationStoreActions {
+    goHome: () => void;
+    goLinks: () => void;
+}
 
 
 export default class NavigationStore extends Store<INavigationStoreState, INavigationStoreActions> {
   protected state: INavigationStoreState;
+  protected actions: INavigationStoreActions;
 
   constructor() {
     super();
     this.state = {};
+
+    this.actions = {
+        goHome: () => this.goTo('/'),
+        goLinks: () => this.goTo('/links')
+    }
   }
 
   private goTo(href: string) {

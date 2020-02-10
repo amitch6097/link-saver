@@ -1,3 +1,5 @@
+import LinkDB from "../db/LinkDB";
+
 const LINK_TEMPLATE: Partial<Global.ILink> = {
   label: "New Link",
   link: "google.com"
@@ -9,9 +11,42 @@ function id(): string {
 
 export default class Links {
   private links: Global.ILink[] = [];
+  private id: string;
+  private label: string;
 
-  constructor(links: Global.ILink[] = []) {
-    this.links = links;
+  static create(): Links {
+    return new Links({});
+  }
+
+  static async load(id): Promise<Links> {
+    const linksObject: Global.ILinks = await new LinkDB().get(id);
+    return new Links(linksObject);
+  }
+
+  constructor({ id: linkId, links, label }: Partial<Global.ILinks>) {
+    this.id = linkId || id();
+    this.links = links || [];
+    this.label = label || ''
+  }
+
+  public toJSON(): Global.ILinks {
+      return {
+          id: this.id,
+          links: this.links,
+          label: this.label
+      }
+  }
+
+  public async save() {
+    await new LinkDB().save(this.id, this.toJSON())
+  }
+
+  public getLabel() {
+      return this.label;
+  }
+
+  public setLabel(label: string) {
+      this.label = label;
   }
 
   public getLinks() {
@@ -23,7 +58,7 @@ export default class Links {
     this.links = [...this.links];
   }
 
-  public setLabel(index: number, label: string) {
+  public setLinkLabel(index: number, label: string) {
     this.links[index].label = label;
     this.links = [...this.links];
   }

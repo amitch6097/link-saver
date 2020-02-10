@@ -4,17 +4,11 @@ import {
   unsubscribe,
   callAction
 } from "simple-object-state";
-import LinkStore, { ILinkStoreState } from "../stores/LinkStore";
+import LinkStore, { ILinkStoreState, ILinkStoreActions } from "../stores/LinkStore";
 
 const callActionOnLinkStore = (action) => (...args) => callAction(LinkStore, action, args)
 
-export default function useLinks(): ILinkStoreState & {
-  add: (index: number) => void;
-  remove: (index: number) => void;
-  setLinkLabel: (index: number, label: string) => void;
-  setLinkLink: (index: number, link: string) => void;
-  setLabel: (label: string) => void;
-} {
+export default function useLinks(): ILinkStoreState & ILinkStoreActions {
   const [state, setState] = useState(LinkStore.InitialState);
 
   useEffect(() => {
@@ -25,6 +19,7 @@ export default function useLinks(): ILinkStoreState & {
 
   return {
     ...state,
+    save: callActionOnLinkStore('save'),
     add: callActionOnLinkStore('add'),
     remove: callActionOnLinkStore('remove'),
     setLabel: callActionOnLinkStore('setLabel'),

@@ -3,67 +3,79 @@ import Links from "../lib/Links";
 
 export interface ILinkStoreState {
   links: Global.ILink[];
-  label: string;
+  label?: string;
+  idle: boolean;
 }
 
 export interface ILinkStoreActions {
-    setLabel: (labe: string) => void;
-    setLinkLink: (index: number, link: string)=> void;
-    setLinkLabel: (index: number, label: string) => void;
-    add: (index: number) => void;
-    remove: (index: number) => void;
+  setLabel: (labe: string) => void;
+  setLinkLink: (index: number, link: string) => void;
+  setLinkLabel: (index: number, label: string) => void;
+  add: (index: number) => void;
+  remove: (index: number) => void;
+  save: () => void;
 }
 
-export default class LinkStore extends Store<ILinkStoreState, ILinkStoreActions> {
+export default class LinkStore extends Store<
+  ILinkStoreState,
+  ILinkStoreActions
+> {
   static InitialState: ILinkStoreState = {
-    label: "New Link List",
-    links: [
-      {
-        label: "My Link",
-        link: "google.com",
-        id: "a"
-      }
-    ]
+    idle: false,
+    links: [],
+    label: ""
   };
   protected state: ILinkStoreState;
   private links: Links;
 
   constructor() {
     super();
-    this.links = new Links(LinkStore.InitialState.links);
+    this.links = Links.create();
     this.state = {
       links: this.links.getLinks(),
-      label: LinkStore.InitialState.label
+      label: this.links.getLabel(),
+      idle: false
     };
 
     this.actions = {
-        setLabel: this.setLabel,
-        setLinkLink: this.links.setLink,
-        setLinkLabel: this.links.setLabel,
-        add: this.links.add,
-        remove: this.links.remove
-    }
+      setLabel: this.links.setLabel,
+      setLinkLink: this.links.setLink,
+      setLinkLabel: this.links.setLinkLabel,
+      add: this.links.add,
+      remove: this.links.remove,
+      save: this.onSave
+    };
   }
+
+  onSave = async () => {
+    this.setState({
+      idle: true
+    });
+    await this.links.save();
+    this.setState({
+      idle: false
+    });
+  };
 
   storeDidCallAction = (action: string) => {
-    switch(action) {
-         case 'setLinkLink': 
-         case 'setLinkLabel': 
-         case 'add': 
-         case 'remove': 
-            this.setState({
-                links: this.links.getLinks()
-            });
-        default: 
-            return;
+    switch (action) {
+      case "setLabel":
+        this.setState({
+          label: this.links.getLabel()
+        });
+        break;
+      case "setLinkLink":
+      case "setLinkLabel":
+      case "add":
+      case "remove":
+        this.setState({
+          links: this.links.getLinks()
+        });
+        break;
+      default:
+        break;
     }
-  }
-
-  setLabel = (label: string) => {
-    this.setState({
-      label
-    });
   };
 }
 
-register(LinkStore)
+register(LinkStore);
