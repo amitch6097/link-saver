@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  register,
   subscribe,
   unsubscribe,
-  unregister,
-  getStore
+  callAction
 } from "simple-object-state";
 import LinkStore, { ILinkStoreState } from "../stores/LinkStore";
-register(LinkStore);
+
+const callActionOnLinkStore = (action) => (...args) => callAction(LinkStore, action, args)
 
 export default function useLinks(): ILinkStoreState & {
   add: (index: number) => void;
@@ -23,19 +22,13 @@ export default function useLinks(): ILinkStoreState & {
     return () => unsubscribe(LinkStore, setState);
   }, [setState]);
 
-  const store = getStore(LinkStore) as any;
-  const add = store && store.add;
-  const remove = store && store.remove;
-  const setLabel = store && store.setLabel;
-  const setLinkLink = store && store.setLinkLink;
-  const setLinkLabel = store && store.setLinkLabel;
 
   return {
     ...state,
-    add,
-    remove,
-    setLabel,
-    setLinkLink,
-    setLinkLabel
+    add: callActionOnLinkStore('add'),
+    remove: callActionOnLinkStore('remove'),
+    setLabel: callActionOnLinkStore('setLabel'),
+    setLinkLink: callActionOnLinkStore('setLinkLink'),
+    setLinkLabel: callActionOnLinkStore('setLinkLabel'),
   };
 }
