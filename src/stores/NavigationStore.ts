@@ -1,9 +1,11 @@
-import { Store } from "simple-object-state";
+import { Store, register } from "simple-object-state";
 import history from "../history";
 
 export interface INavigationStoreState {}
+export interface INavigationStoreActions {}
 
-export default class NavigationStore extends Store<INavigationStoreState> {
+
+export default class NavigationStore extends Store<INavigationStoreState, INavigationStoreActions> {
   protected state: INavigationStoreState;
 
   constructor() {
@@ -15,3 +17,5 @@ export default class NavigationStore extends Store<INavigationStoreState> {
     history.push(href);
   }
 }
+
+register(NavigationStore)

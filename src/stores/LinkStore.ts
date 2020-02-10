@@ -1,4 +1,4 @@
-import { Store } from "simple-object-state";
+import { Store, register } from "simple-object-state";
 import Links from "../lib/Links";
 
 export interface ILinkStoreState {
@@ -6,7 +6,15 @@ export interface ILinkStoreState {
   label: string;
 }
 
-export default class LinkStore extends Store<ILinkStoreState> {
+export interface ILinkStoreActions {
+    setLabel: (labe: string) => void;
+    setLinkLink: (index: number, link: string)=> void;
+    setLinkLabel: (index: number, label: string) => void;
+    add: (index: number) => void;
+    remove: (index: number) => void;
+}
+
+export default class LinkStore extends Store<ILinkStoreState, ILinkStoreActions> {
   static InitialState: ILinkStoreState = {
     label: "New Link List",
     links: [
@@ -27,39 +35,35 @@ export default class LinkStore extends Store<ILinkStoreState> {
       links: this.links.getLinks(),
       label: LinkStore.InitialState.label
     };
+
+    this.actions = {
+        setLabel: this.setLabel,
+        setLinkLink: this.links.setLink,
+        setLinkLabel: this.links.setLabel,
+        add: this.links.add,
+        remove: this.links.remove
+    }
+  }
+
+  storeDidCallAction = (action: string) => {
+    switch(action) {
+         case 'setLinkLink': 
+         case 'setLinkLabel': 
+         case 'add': 
+         case 'remove': 
+            this.setState({
+                links: this.links.getLinks()
+            });
+        default: 
+            return;
+    }
   }
 
   setLabel = (label: string) => {
     this.setState({
       label
-    } as ILinkStoreState);
-  };
-
-  setLinkLink = (index: number, link: string) => {
-    this.links.setLink(index, link);
-    this.setState({
-      links: this.links.getLinks()
-    } as ILinkStoreState);
-  };
-
-  setLinkLabel = (index: number, label: string) => {
-    this.links.setLabel(index, label);
-    this.setState({
-      links: this.links.getLinks()
-    } as ILinkStoreState);
-  };
-
-  add = (index: number) => {
-    this.links.add(index);
-    this.setState({
-      links: this.links.getLinks()
-    } as ILinkStoreState);
-  };
-
-  remove = (index: number) => {
-    this.links.remove(index);
-    this.setState({
-      links: this.links.getLinks()
-    } as ILinkStoreState);
+    });
   };
 }
+
+register(LinkStore)
