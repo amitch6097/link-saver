@@ -1,44 +1,52 @@
-import LinkDB from "../db/LinkDB";
-
-const LINK_TEMPLATE: Partial<Global.ILink> = {
-  label: "New Link",
-  link: "google.com"
-};
-
-function id(): string {
-  return String(Math.round(Math.random() * 100000000));
-}
+import LinksDB from "../db/LinksDB";
+import Link from "./Link";
+import { id } from "./Util";
 
 export default class Links {
-  private links: Global.ILink[] = [];
-  private id: string;
-  private label: string;
 
   static create(): Links {
-    return new Links({});
+    return new Links({
+      id: id(),
+      label: "New Links List",
+      links: []
+    });
+  }
+
+  static async loadJSON(id): Promise<Global.ILinksJSON> {
+    return await new LinksDB().get(id);
+  }
+
+  static async loadInterface(id): Promise<Global.ILinks> {
+    const linksJSON = await Links.loadJSON(id);
+    const {linkIds, label} = linksJSON;
+    const links = await Promise.all(linkIds.map((id) => Link.loadInterface(id)))
+
+    return { 
+        id,
+        label,
+        links
+    }
   }
 
   static async load(id): Promise<Links> {
-    const linksObject: Global.ILinks = await new LinkDB().get(id);
-    return new Links(linksObject);
+    const links =  await Links.loadInterface(id);
+    return new Links({
+        ...links
+    });
   }
 
-  constructor({ id: linkId, links, label }: Partial<Global.ILinks>) {
-    this.id = linkId || id();
-    this.links = links || [];
-    this.label = label || ''
+  private links: Link[];
+  private label: string;
+  private id: string;
+
+  constructor(data: Global.ILinks) {
+    this.label = data.label;
+    this.id = data.id;
+    this.links = data.links && data.links.length ? data.links.map(link => new Link(link)) : [new Link()];
   }
 
-  public toJSON(): Global.ILinks {
-      return {
-          id: this.id,
-          links: this.links,
-          label: this.label
-      }
-  }
-
-  public async save() {
-    await new LinkDB().save(this.id, this.toJSON())
+  public getLinks(): Global.ILink[]{
+      return this.links.map((link) => link.toInterface());
   }
 
   public getLabel() {
@@ -49,27 +57,42 @@ export default class Links {
       this.label = label;
   }
 
-  public getLinks() {
-    return this.links;
+  public toJSON() {
+      const linkIds = this.links.map((link) => link.getId())
+      return { 
+        linkIds,
+        id: this.id,
+        label: this.label
+      }
+  }
+
+  public toInterface(): Global.ILinks {
+    const links = this.links.map((link) => link.toInterface())
+    return { 
+    links,
+      id: this.id,
+      label: this.label
+    }
+  }
+
+  public async save() {
+    await new LinksDB().save(this.id, this.toJSON());
   }
 
   public setLink(index: number, link: string) {
-    this.links[index].link = link;
+    this.links[index].setLink(link);
     this.links = [...this.links];
   }
 
   public setLinkLabel(index: number, label: string) {
-    this.links[index].label = label;
+    this.links[index].setLabel(label);
     this.links = [...this.links];
   }
 
   public add(index: number) {
-    const newLInk = {
-      id: id(),
-      ...LINK_TEMPLATE
-    } as Global.ILink;
-    let linksCopy: Global.ILink[] = [...this.links];
-    let nextLinks: Global.ILink[] = [];
+    const newLInk = new Link();
+    let linksCopy: Link[] = [...this.links];
+    let nextLinks: Link[] = [];
     while (index !== nextLinks.length) {
       const link = linksCopy.shift();
       if (!link) {

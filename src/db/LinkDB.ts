@@ -1,14 +1,14 @@
 import DBInterface from './DBInterface';
-import {LinksDBStore} from './dbs';
+import {LinkDBStore} from './dbs';
 
-export default class LinkDB extends DBInterface<Global.ILinks> {
+export default class LinkDB extends DBInterface<Global.ILinkJSON> {
     static Instance: LinkDB;
 
     constructor() {
         if(LinkDB.Instance) {
             return LinkDB.Instance;
         } else {
-            super(LinksDBStore);
+            super(LinkDBStore);
         }
     }
 }

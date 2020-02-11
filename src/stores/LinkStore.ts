@@ -38,11 +38,11 @@ export default class LinkStore extends Store<
     };
 
     this.actions = {
-      setLabel: this.links.setLabel,
-      setLinkLink: this.links.setLink,
-      setLinkLabel: this.links.setLinkLabel,
-      add: this.links.add,
-      remove: this.links.remove,
+      setLabel: this.links.setLabel.bind(this.links),
+      setLinkLink: this.links.setLink.bind(this.links),
+      setLinkLabel: this.links.setLinkLabel.bind(this.links),
+      add: this.links.add.bind(this.links),
+      remove: this.links.remove.bind(this.links),
       save: this.onSave
     };
   }

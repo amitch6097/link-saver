@@ -21,8 +21,8 @@ export default class DBInterface<I extends {}> {
     return await get(id, this.store);
   }
 
-  public async keys(store): Promise<IDBValidKey[]> {
-    return await keys(store);
+  public async keys(): Promise<IDBValidKey[]> {
+    return await keys(this.store);
   }
 
   public async getAll(): Promise<I[]> {

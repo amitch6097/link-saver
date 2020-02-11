@@ -33,18 +33,12 @@ export function LinkRow({
   return (
     <Grid container direction="row" justify="center" alignItems="center">
       <TextField
-        id="outlined-helperText"
-        label="Display"
         value={label}
         onChange={changeLabel}
-        variant="outlined"
       />
       <TextField
-        id="outlined-helperText"
-        label="Link"
         value={link}
         onChange={changeLink}
-        variant="outlined"
       />
 
       <Add onClick={onAdd} />

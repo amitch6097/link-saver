@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   subscribe,
   unsubscribe,
-  callAction
+  callAction,
+  getState
 } from "simple-object-state";
 import LinkStore, { ILinkStoreState, ILinkStoreActions } from "../stores/LinkStore";
 
@@ -13,6 +14,10 @@ export default function useLinks(): ILinkStoreState & ILinkStoreActions {
 
   useEffect(() => {
     subscribe(LinkStore, setState);
+    const state = getState<LinkStore, ILinkStoreState, ILinkStoreActions>(LinkStore) as ILinkStoreState
+    setState({
+        ...state
+    });
     return () => unsubscribe(LinkStore, setState);
   }, [setState]);
 
