@@ -6,11 +6,9 @@ import HomeStore, {
   IHomeStoreActions
 } from "../stores/HomeStore";
 
-import NavigationStore, {
-  } from "../stores/NavigationStore";
+import NavigationStore from "../stores/NavigationStore";
 
-
-  import {LinksCardList} from '../components/LinksCardList';
+import { LinksCardList } from "../components/LinksCardList";
 import {
   subscribe,
   unsubscribe,
@@ -23,12 +21,10 @@ export class Home extends React.Component<any, IHomeStoreState> {
     super(props);
     //@ts-ignore
     subscribe(HomeStore, this.setState.bind(this));
-    this.state = HomeStore.InitialState;
+    this.state = getState(HomeStore) || {} as any;
   }
 
-  componentDidMount() {
-
-  }
+  componentDidMount() {}
 
   componentWillUnmount() {
     //@ts-ignore
@@ -36,13 +32,34 @@ export class Home extends React.Component<any, IHomeStoreState> {
   }
 
   render() {
-      console.log(this.state)
+    console.log(this.state);
     return (
       <div>
         Home
-        <LinksCardList label={this.state.label} links={this.state.collection} onAdd={() => callAction(NavigationStore, 'goLinks')}/>
-        <LinksCardList label={"Hot Links Collections"} links={this.state.collection} withAdd={false} withRemove={false}/>
-
+        <LinksCardList
+          label={this.state.label}
+          links={this.state.collection}
+          withAdd={true}
+          LinksCardConfig={{
+            withRemove: true,
+            withEdit: true,
+            withClick: false
+          }}
+          onAdd={() => callAction(NavigationStore, "goLinks")}
+        />
+        <div>Search</div>
+        <div>Popular</div>
+        <div>New</div>
+        <LinksCardList
+          withAdd={false}
+          label={"Hot Links Collections"}
+          links={this.state.collection}
+          LinksCardConfig={{
+            withRemove: false,
+            withEdit: false,
+            withClick: true
+          }}
+        />
       </div>
     );
   }

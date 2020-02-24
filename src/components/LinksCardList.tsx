@@ -3,7 +3,18 @@ import TextField from "@material-ui/core/TextField";
 import Grid, { GridSpacing } from "@material-ui/core/Grid";
 
 import { Add } from "../components/Add";
-import { LinksCard } from "./LinksCard";
+import { LinksCard, ILinksCardConfig} from "./LinksCard";
+
+interface ILinksCardListProps {
+    links: Global.ILinks[];
+    LinksCardConfig: ILinksCardConfig;
+    withAdd: boolean;
+    onAdd?: () => void;
+    onCardChangeLabel?: (index: number) => (label: string) => void;
+    onRemoveCard?: (index: number) => () => void;
+    onClickCard?: (index: number) => () => void;
+    label: string;
+}
 
 export function LinksCardList({
   links = [],
@@ -11,19 +22,10 @@ export function LinksCardList({
   onClickCard = () => () => {},
   onRemoveCard = () => () => {},
   onAdd = () => {},
-  withRemove = true,
-  withAdd = true,
   label = "",
-}: {
-  links: Global.ILinks[];
-  withRemove?: boolean;
-  withAdd?: boolean;
-  onAdd?: () => void;
-  onCardChangeLabel?: (index: number) => (label: string) => void;
-  onRemoveCard?: (index: number) => () => void;
-  onClickCard?: (index: number) => () => void;
-  label: string;
-}) {
+  withAdd = true,
+  LinksCardConfig = {} as ILinksCardConfig
+}: ILinksCardListProps) {
   return (
     <Grid container direction="column" justify="center" alignItems="center">
         <h1>{label}</h1>
@@ -33,10 +35,12 @@ export function LinksCardList({
         const onChangeLabel = onCardChangeLabel(index);
         const onRemove = onRemoveCard(index);
         const onClick = onClickCard(index);
+        const onEdit = onClickCard(index);
         return (
           <LinksCard
+            {...LinksCardConfig}
             label={link.label}
-            withRemove={withRemove}
+            onEdit={onEdit}
             onClick={onClick}
             onRemove={onRemove}
             onChangeLabel={onChangeLabel}
