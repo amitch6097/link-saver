@@ -18,7 +18,7 @@ export default class NavigationStore extends Store<INavigationStoreState, INavig
 
     this.actions = {
         goHome: () => this.goTo('/'),
-        goLinks: () => this.goTo('/links')
+        goLinks: (linkId?: string) => this.goTo(linkId ? `/links/${linkId}` : '/links')
     }
   }
 

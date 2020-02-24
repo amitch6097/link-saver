@@ -12,7 +12,7 @@ interface ILinksCardListProps {
     onAdd?: () => void;
     onCardChangeLabel?: (index: number) => (label: string) => void;
     onRemoveCard?: (index: number) => () => void;
-    onClickCard?: (index: number) => () => void;
+    onClickCard?: (id: string) => void;
     label: string;
 }
 
@@ -34,8 +34,8 @@ export function LinksCardList({
       {links.map((link, index) => {
         const onChangeLabel = onCardChangeLabel(index);
         const onRemove = onRemoveCard(index);
-        const onClick = onClickCard(index);
-        const onEdit = onClickCard(index);
+        const onClick = () => onClickCard(link.id);
+        const onEdit = () => onClickCard(link.id);
         return (
           <LinksCard
             {...LinksCardConfig}

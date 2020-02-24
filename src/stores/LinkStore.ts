@@ -14,6 +14,7 @@ export interface ILinkStoreActions {
   add: (index: number) => void;
   remove: (index: number) => void;
   save: () => void;
+  load: (linksId: string) => void;
 }
 
 export default class LinkStore extends Store<
@@ -43,8 +44,21 @@ export default class LinkStore extends Store<
       setLinkLabel: this.links.setLinkLabel.bind(this.links),
       add: this.links.add.bind(this.links),
       remove: this.links.remove.bind(this.links),
-      save: this.onSave
+      save: this.onSave,
+      load: this.onLoad
     };
+  }
+
+  onLoad = async (linksId: string) => {
+    this.setState({
+        idle: true
+      });
+      this.links = await Links.load(linksId);
+      this.setState({
+        links: this.links.getLinks(),
+        label: this.links.getLabel(),
+        idle: false,
+      });
   }
 
   onSave = async () => {

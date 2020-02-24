@@ -1,6 +1,5 @@
 import React from "react";
 
-import useNavigation from "../hooks/useNavigation";
 import HomeStore, {
   IHomeStoreState,
   IHomeStoreActions
@@ -46,6 +45,7 @@ export class Home extends React.Component<any, IHomeStoreState> {
             withClick: false
           }}
           onAdd={() => callAction(NavigationStore, "goLinks")}
+          onClickCard={(linkId) => callAction(NavigationStore, "goLinks", linkId)}
         />
         <div>Search</div>
         <div>Popular</div>
